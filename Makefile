@@ -1,14 +1,21 @@
+CC_i686 = i686-w64-mingw32-gcc
+CC_x86_64 = x86_64-w64-mingw32-gcc
 
-CC=i686-pc-mingw32-gcc
-#CC=x86_64-pc-mingw32-gcc
+CFLAGS_i686 = -DNDEBUG -DWIN32 -D_CONSOLE -DTELNET -DGAPING_SECURITY_HOLE
+LDFLAGS_i686 = -s -lkernel32 -luser32 -lwsock32 -lwinmm
 
-CFLAGS=-DNDEBUG -DWIN32 -D_CONSOLE -DTELNET -DGAPING_SECURITY_HOLE
-LDFLAGS=-s -lkernel32 -luser32 -lwsock32 -lwinmm
+CFLAGS_x86_64 = -DNDEBUG -DWIN64 -D_CONSOLE -DTELNET -DGAPING_SECURITY_HOLE -m64
+LDFLAGS_x86_64 = -s -m64 -lkernel32 -luser32 -lwsock32 -lwinmm
 
-all: nc.exe
+SRC = getopt.c doexec.c netcat.c
 
-nc.exe: getopt.c doexec.c netcat.c
-	$(CC) $(CFLAGS) getopt.c doexec.c netcat.c $(LDFLAGS) -o nc.exe
+all: nc32.exe nc64.exe
+
+nc32.exe: $(SRC)
+	$(CC_i686) $(CFLAGS_i686) $(SRC) $(LDFLAGS_i686) -o $@
+
+nc64.exe: $(SRC)
+	$(CC_x86_64) $(CFLAGS_x86_64) $(SRC) $(LDFLAGS_x86_64) -o $@
 
 clean:
-	rm nc.exe
+	rm -f nc32.exe nc64.exe
